@@ -15,21 +15,13 @@ local RainbowSpeed = 1.0
 local Registry = {}
 local ConfigObjects = {}
 local ThemeListeners = {}
+local VIPBorderObjects = {}
 
 local function clamp(value, min, max)
     return math.max(min, math.min(max, value))
 end
 
 local VIPBorderConfig = {
-    BlackGoldColors = {
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 20, 0)),
-        ColorSequenceKeypoint.new(0.15, Color3.fromRGB(160, 110, 0)),
-        ColorSequenceKeypoint.new(0.35, Color3.fromRGB(230, 180, 40)),
-        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 230, 80)),
-        ColorSequenceKeypoint.new(0.65, Color3.fromRGB(230, 180, 40)),
-        ColorSequenceKeypoint.new(0.85, Color3.fromRGB(160, 110, 0)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 20, 0))
-    },
     Speed = 3,
     Thickness = 2.2
 }
@@ -64,7 +56,20 @@ local function ResolveImageAsset(input)
     return ""
 end
 
-local function CreateVIPBorder(target, thickness, customColors)
+local function GenerateThemeGradient(accentColor)
+    local h, s, v = Color3.toHSV(accentColor)
+    local dark = Color3.fromHSV(h, s, math.max(0, v - 0.3))
+    local bright = Color3.fromHSV(h, s, math.min(1, v + 0.3))
+    return ColorSequence.new({
+        ColorSequenceKeypoint.new(0, dark),
+        ColorSequenceKeypoint.new(0.2, accentColor),
+        ColorSequenceKeypoint.new(0.5, bright),
+        ColorSequenceKeypoint.new(0.8, accentColor),
+        ColorSequenceKeypoint.new(1, dark)
+    })
+end
+
+local function CreateVIPBorder(target, thickness)
     if not target or not target:IsA("GuiObject") then return nil end
     if target:FindFirstChild("VIPBorderStroke") then return nil end
     local stroke = Instance.new("UIStroke")
@@ -74,24 +79,29 @@ local function CreateVIPBorder(target, thickness, customColors)
     stroke.Parent = target
     local gradient = Instance.new("UIGradient")
     gradient.Name = "VIPBorderGradient"
-    gradient.Color = ColorSequence.new(customColors or VIPBorderConfig.BlackGoldColors)
+    gradient.Color = GenerateThemeGradient(CurrentTheme.Accent)
     gradient.Rotation = math.random(0, 360)
     gradient.Parent = stroke
     local glow = Instance.new("UIStroke")
     glow.Name = "VIPBorderGlow"
     glow.Thickness = (thickness or VIPBorderConfig.Thickness) * 3
     glow.Transparency = 0.7
-    glow.Color = Color3.fromRGB(255, 200, 50)
+    glow.Color = CurrentTheme.Accent
     glow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     glow.Parent = target
     local glowGradient = Instance.new("UIGradient")
-    glowGradient.Color = ColorSequence.new(customColors or VIPBorderConfig.BlackGoldColors)
+    glowGradient.Color = GenerateThemeGradient(CurrentTheme.Accent)
     glowGradient.Rotation = math.random(0, 360)
     glowGradient.Parent = glow
     table.insert(ActiveGradients, {
         MainGradient = gradient,
         GlowGradient = glowGradient,
         Speed = VIPBorderConfig.Speed
+    })
+    table.insert(VIPBorderObjects, {
+        Main = gradient,
+        Glow = glowGradient,
+        GlowStroke = glow
     })
     return stroke
 end
@@ -183,6 +193,12 @@ function Fenglib:SetTheme(themeName)
             if r.Object then
                 Tween(r.Object, {[r.Property] = CurrentTheme[r.Type]})
             end
+        end
+        for _, data in ipairs(VIPBorderObjects) do
+            local newGrad = GenerateThemeGradient(CurrentTheme.Accent)
+            if data.Main then data.Main.Color = newGrad end
+            if data.Glow then data.Glow.Color = newGrad end
+            if data.GlowStroke then data.GlowStroke.Color = CurrentTheme.Accent end
         end
         for _, fn in pairs(ThemeListeners) do
             pcall(fn)
@@ -305,7 +321,7 @@ function Fenglib:CreateWindow(Config)
     MainFrame.Size = UDim2.new(0, 0, 0, 0)
     MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
     MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-    MainFrame.ClipsDescendants = false
+    MainFrame.ClipsDescendants = true
     MainFrame.BackgroundTransparency = 0.05
     MainFrame.Parent = ScreenGui
     Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 14)
@@ -324,6 +340,7 @@ function Fenglib:CreateWindow(Config)
             bgImage.ImageTransparency = 0.2
             bgImage.ZIndex = 0
             bgImage.Parent = MainFrame
+            Instance.new("UICorner", bgImage).CornerRadius = UDim.new(0, 14)
             local darkOverlay = Instance.new("Frame")
             darkOverlay.Name = "DarkOverlay"
             darkOverlay.Size = UDim2.new(1, 0, 1, 0)
@@ -332,6 +349,7 @@ function Fenglib:CreateWindow(Config)
             darkOverlay.BorderSizePixel = 0
             darkOverlay.ZIndex = 1
             darkOverlay.Parent = MainFrame
+            Instance.new("UICorner", darkOverlay).CornerRadius = UDim.new(0, 14)
         end
     end
 
@@ -653,8 +671,6 @@ function Fenglib:CreateWindow(Config)
     PageContainer.Position = UDim2.new(0, 160, 0, 0)
     PageContainer.BackgroundTransparency = 1
     PageContainer.Parent = Content
-
-    MainFrame.ClipsDescendants = false
 
     local Resizer = Instance.new("TextButton")
     Resizer.Name = "WindowResizer"
@@ -3014,4 +3030,3 @@ function Fenglib:CreateWindow(Config)
 end
 
 return Fenglib
-
