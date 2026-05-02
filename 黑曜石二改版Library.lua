@@ -4153,7 +4153,7 @@ do
 
             local Offset = Toggle.Value and 1 or 0
 
-            Switch.BackgroundTransparency = Toggle.Disabled and 0.75 or 0
+            Switch.BackgroundTransparency = Toggle.Disabled and 0.75 or 0.5
             SwitchStroke.Transparency = Toggle.Disabled and 0.75 or 0
 
             Switch.BackgroundColor3 = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.MainColor
@@ -6466,7 +6466,7 @@ function Library:CreateWindow(WindowInfo)
             Position = WindowInfo.Position,
             Size = WindowInfo.Size,
             Visible = false,
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = 0.85,
             ClipsDescendants = true,
             Parent = ScreenGui,
         })
@@ -6478,7 +6478,7 @@ function Library:CreateWindow(WindowInfo)
                 Image = Library:GetImageAsset(WindowInfo.BackgroundImage),
                 Position = UDim2.fromScale(0, 0),
                 Size = UDim2.fromScale(1, 1),
-                ScaleType = Enum.ScaleType.Crop,
+                ScaleType = Enum.ScaleType.Stretch,
                 BackgroundTransparency = 1,
                 ImageTransparency = 0,
                 ZIndex = 1,
@@ -6648,6 +6648,7 @@ function Library:CreateWindow(WindowInfo)
 
         SearchBox = New("TextBox", {
             BackgroundColor3 = "MainColor",
+            BackgroundTransparency = 0.5,
             PlaceholderText = "Search",
             Size = WindowInfo.SearchbarSize,
             TextScaled = true,
@@ -6708,9 +6709,7 @@ function Library:CreateWindow(WindowInfo)
         --// Bottom Bar \\--
         BottomBackground = New("Frame", {
             AnchorPoint = Vector2.new(0, 1),
-            BackgroundColor3 = function()
-                return Library:GetBetterColor(Library.Scheme.BackgroundColor, 4)
-            end,
+            BackgroundTransparency = 0.85,
             Position = UDim2.fromScale(0, 1),
             Size = UDim2.new(1, 0, 0, 20 + WindowInfo.CornerRadius),
             Parent = MainFrame
@@ -6779,7 +6778,7 @@ function Library:CreateWindow(WindowInfo)
         --// Tabs \\--
         Tabs = New("ScrollingFrame", {
             AutomaticCanvasSize = Enum.AutomaticSize.Y,
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = 0.85,
             CanvasSize = UDim2.fromScale(0, 0),
             Position = UDim2.fromOffset(0, 49),
             ScrollBarThickness = 0,
@@ -7322,7 +7321,7 @@ function Library:CreateWindow(WindowInfo)
             do
                 GroupboxHolder = New("Frame", {
                     BackgroundColor3 = "BackgroundColor",
-                    BackgroundTransparency = 0.5,
+                    BackgroundTransparency = 0.85,
                     Size = UDim2.fromScale(1, 0),
                     ZIndex = 2,
                     Parent = BoxHolder,
@@ -7442,7 +7441,7 @@ function Library:CreateWindow(WindowInfo)
             do
                 TabboxHolder = New("Frame", {
                     BackgroundColor3 = "BackgroundColor",
-                    BackgroundTransparency = 0.5,
+                    BackgroundTransparency = 0.85,
                     Size = UDim2.fromScale(1, 0),
                     ZIndex = 2,
                     Parent = BoxHolder,
@@ -7493,7 +7492,7 @@ function Library:CreateWindow(WindowInfo)
 
                 local Button = New("TextButton", {
                     BackgroundColor3 = "MainColor",
-                    BackgroundTransparency = 0,
+                    BackgroundTransparency = 0.5,
                     Size = UDim2.fromOffset(0, 34),
                     Text = "",
                     Parent = TabboxButtons,
@@ -7639,10 +7638,10 @@ function Library:CreateWindow(WindowInfo)
                 end
 
                 function Tab:Hide()
-                    Button.BackgroundTransparency = 0
-                    BottomCover.BackgroundTransparency = 0
-                    LeftCover.BackgroundTransparency = 0
-                    RightCover.BackgroundTransparency = 0
+                    Button.BackgroundTransparency = 0.5
+                    BottomCover.BackgroundTransparency = 0.5
+                    LeftCover.BackgroundTransparency = 0.5
+                    RightCover.BackgroundTransparency = 0.5
 
                     ButtonLabel.TextTransparency = 0.5
                     if ButtonIcon then
@@ -7726,7 +7725,7 @@ function Library:CreateWindow(WindowInfo)
             end
 
             TweenService:Create(TabButton, Library.TweenInfo, {
-                BackgroundTransparency = 0.5,
+                BackgroundTransparency = 0.85,
             }):Play()
             TweenService:Create(TabLabel, Library.TweenInfo, {
                 TextTransparency = 0,
@@ -7991,7 +7990,7 @@ function Library:CreateWindow(WindowInfo)
             end
 
             TweenService:Create(TabButton, Library.TweenInfo, {
-                BackgroundTransparency = 0.5,
+                BackgroundTransparency = 0.85,
             }):Play()
             TweenService:Create(TabLabel, Library.TweenInfo, {
                 TextTransparency = 0,
@@ -8241,7 +8240,7 @@ function Library:CreateWindow(WindowInfo)
         
         local _Sep2 = New("Frame", {
             BackgroundColor3 = "OutlineColor",
-            BackgroundTransparency = 0,
+            BackgroundTransparency = 0.5,
             BorderSizePixel = 0,
             Size = UDim2.new(1, 0, 0, 1),
             LayoutOrder = 5,
@@ -8394,7 +8393,7 @@ function Library:CreateWindow(WindowInfo)
             local TextBtn = New("TextButton", {
                 BackgroundColor3 = BtnColor,
                 BorderColor3 = BtnOutline,
-                BackgroundTransparency = WaitTime > 0 and 0.5 or 0,
+                BackgroundTransparency = WaitTime > 0 and 0.5 or 0.5,
                 Size = UDim2.fromOffset(0, 26),
                 Text = "",
                 AutoButtonColor = false,
@@ -8467,7 +8466,7 @@ function Library:CreateWindow(WindowInfo)
                         TweenService:Create(TextBtn, Library.TweenInfo, { BackgroundTransparency = 0.5 }):Play()
                         TweenService:Create(BtnLabel, Library.TweenInfo, { TextTransparency = 0.5 }):Play()
                     else
-                        TweenService:Create(TextBtn, Library.TweenInfo, { BackgroundTransparency = 0 }):Play()
+                        TweenService:Create(TextBtn, Library.TweenInfo, { BackgroundTransparency = 0.5 }):Play()
                         TweenService:Create(BtnLabel, Library.TweenInfo, { TextTransparency = 0 }):Play()
                     end
                 end
@@ -8789,6 +8788,7 @@ function Library:CreateLoading(LoadingInfo)
         BackgroundColor3 = function()
             return Library:GetBetterColor(Library.Scheme.BackgroundColor, -1)
         end,
+        BackgroundTransparency = 0.85,
         Position = UDim2.fromScale(0.5, 0.5),
         Size = UDim2.fromOffset(Loading.ShowSidebar and (Loading.ContentWidth + Loading.SidebarWidth) or Loading.WindowWidth, Loading.WindowHeight),
         ClipsDescendants = true,
@@ -8972,6 +8972,7 @@ function Library:CreateLoading(LoadingInfo)
     --// Progress Bar \\--
     local SliderBar = New("Frame", {
         BackgroundColor3 = "MainColor",
+        BackgroundTransparency = 0.5,
         Size = UDim2.new(0.7, 0, 0, 15),
         Parent = InnerContent,
     })
@@ -9087,7 +9088,7 @@ function Library:CreateLoading(LoadingInfo)
 
     local ErrorButtonsDivider = New("Frame", {
         BackgroundColor3 = "OutlineColor",
-        BackgroundTransparency = 0,
+        BackgroundTransparency = 0.5,
         BorderSizePixel = 0,
         AnchorPoint = Vector2.new(0.5, 0),
         Position = UDim2.new(0.5, 0, 1, -48),
