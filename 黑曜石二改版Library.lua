@@ -6468,6 +6468,28 @@ function Library:CreateWindow(WindowInfo)
             ClipsDescendants = true,
             Parent = ScreenGui,
         })
+
+        --// Background Image (must be created FIRST as a child to render at bottom layer)
+        if WindowInfo.BackgroundImage and WindowInfo.BackgroundImage ~= "" then
+            BackgroundImage = New("ImageLabel", {
+                Image = Library:GetImageAsset(WindowInfo.BackgroundImage),
+                Position = UDim2.fromScale(0, 0),
+                Size = UDim2.fromScale(1, 1),
+                ScaleType = Enum.ScaleType.Crop,
+                BackgroundTransparency = 1,
+                ImageTransparency = 0.1,
+                Parent = MainFrame,
+            })
+
+            table.insert(
+                Library.Corners,
+                New("UICorner", {
+                    CornerRadius = UDim.new(0, WindowInfo.CornerRadius),
+                    Parent = BackgroundImage,
+                })
+            )
+        end
+
         table.insert(
             Library.Corners,
             New("UICorner", {
@@ -6493,27 +6515,6 @@ function Library:CreateWindow(WindowInfo)
             Size = UDim2.new(0, 1, 1, -21),
             Parent = MainFrame,
         })
-
-        if WindowInfo.BackgroundImage and WindowInfo.BackgroundImage ~= "" then
-            BackgroundImage = New("ImageLabel", {
-                Image = Library:GetImageAsset(WindowInfo.BackgroundImage),
-                Position = UDim2.fromScale(0, 0),
-                Size = UDim2.fromScale(1, 1),
-                ScaleType = Enum.ScaleType.Crop,
-                ZIndex = -999,
-                BackgroundTransparency = 1,
-                ImageTransparency = 0.1,
-                Parent = MainFrame,
-            })
-
-            table.insert(
-                Library.Corners,
-                New("UICorner", {
-                    CornerRadius = UDim.new(0, WindowInfo.CornerRadius),
-                    Parent = BackgroundImage,
-                })
-            )
-        end
 
         if WindowInfo.Center then
             MainFrame.Position = UDim2.new(0.5, -MainFrame.Size.X.Offset / 2, 0.5, -MainFrame.Size.Y.Offset / 2)
