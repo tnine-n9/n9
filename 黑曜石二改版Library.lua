@@ -6476,19 +6476,23 @@ function Library:CreateWindow(WindowInfo)
             table.insert(Library.Corners, BackgroundCorner)
 
             -- Sync BackgroundImage position/size/visibility with MainFrame
-            local BackgroundSyncConnection
-            BackgroundSyncConnection = RunService.Heartbeat:Connect(function()
-                if not MainFrame or not MainFrame.Parent then
-                    BackgroundSyncConnection:Disconnect()
-                    return
-                end
-                if BackgroundImage and BackgroundImage.Parent then
-                    BackgroundImage.Position = MainFrame.Position
-                    BackgroundImage.Size = MainFrame.Size
-                    BackgroundImage.Visible = MainFrame.Visible
-                end
+            -- (runs after MainFrame is created)
+            task.defer(function()
+                repeat task.wait() until MainFrame and MainFrame.Parent
+                local BackgroundSyncConnection
+                BackgroundSyncConnection = RunService.Heartbeat:Connect(function()
+                    if not MainFrame or not MainFrame.Parent then
+                        BackgroundSyncConnection:Disconnect()
+                        return
+                    end
+                    if BackgroundImage and BackgroundImage.Parent then
+                        BackgroundImage.Position = MainFrame.Position
+                        BackgroundImage.Size = MainFrame.Size
+                        BackgroundImage.Visible = MainFrame.Visible
+                    end
+                end)
+                Library:GiveSignal(BackgroundSyncConnection)
             end)
-            Library:GiveSignal(BackgroundSyncConnection)
         end
 
         MainFrame = New("TextButton", {
