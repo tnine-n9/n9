@@ -1157,14 +1157,13 @@ function Library:GetImageAsset(ImageInput: string): string
             if Success and Result and Result ~= "" then
                 Library.ImageCache[ImageInput] = Result
                 return Result
-            else
-                warn("[Obsidian] BackgroundImage failed: " .. tostring(Result))
-                return ""
             end
-        else
-            warn("[Obsidian] getcustomasset/writefile not available, cannot load external image")
-            return ""
+            warn("[Obsidian] BackgroundImage download failed, trying direct URL: " .. tostring(Result))
         end
+
+        -- Fallback: return the direct URL (many executors support loading external URLs directly)
+        Library.ImageCache[ImageInput] = ImageInput
+        return ImageInput
     end
 
     return ImageInput
@@ -6501,7 +6500,7 @@ function Library:CreateWindow(WindowInfo)
                 Position = UDim2.fromScale(0, 0),
                 Size = UDim2.fromScale(1, 1),
                 ScaleType = Enum.ScaleType.Crop,
-                ZIndex = 0,
+                ZIndex = -999,
                 BackgroundTransparency = 1,
                 ImageTransparency = 0.1,
                 Parent = MainFrame,
