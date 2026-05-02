@@ -6456,6 +6456,41 @@ function Library:CreateWindow(WindowInfo)
         Library.KeybindFrame.Position = UDim2.new(0, 6, 0.5, 0)
         Library.KeybindFrame.Visible = false
 
+        --// Background Image Layer (created BEFORE MainFrame so it renders underneath)
+        if WindowInfo.BackgroundImage and WindowInfo.BackgroundImage ~= "" then
+            BackgroundImage = New("ImageLabel", {
+                Image = Library:GetImageAsset(WindowInfo.BackgroundImage),
+                Position = WindowInfo.Position,
+                Size = WindowInfo.Size,
+                ScaleType = Enum.ScaleType.Crop,
+                BackgroundTransparency = 1,
+                ImageTransparency = 0.1,
+                ClipsDescendants = true,
+                Parent = ScreenGui,
+            })
+
+            local BackgroundCorner = New("UICorner", {
+                CornerRadius = UDim.new(0, WindowInfo.CornerRadius),
+                Parent = BackgroundImage,
+            })
+            table.insert(Library.Corners, BackgroundCorner)
+
+            -- Sync BackgroundImage position/size/visibility with MainFrame
+            local BackgroundSyncConnection
+            BackgroundSyncConnection = RunService.Heartbeat:Connect(function()
+                if not MainFrame or not MainFrame.Parent then
+                    BackgroundSyncConnection:Disconnect()
+                    return
+                end
+                if BackgroundImage and BackgroundImage.Parent then
+                    BackgroundImage.Position = MainFrame.Position
+                    BackgroundImage.Size = MainFrame.Size
+                    BackgroundImage.Visible = MainFrame.Visible
+                end
+            end)
+            Library:GiveSignal(BackgroundSyncConnection)
+        end
+
         MainFrame = New("TextButton", {
             BackgroundColor3 = function()
                 return Library:GetBetterColor(Library.Scheme.BackgroundColor, -1)
@@ -6465,30 +6500,10 @@ function Library:CreateWindow(WindowInfo)
             Position = WindowInfo.Position,
             Size = WindowInfo.Size,
             Visible = false,
+            BackgroundTransparency = 0.15,
             ClipsDescendants = true,
             Parent = ScreenGui,
         })
-
-        --// Background Image (must be created FIRST as a child to render at bottom layer)
-        if WindowInfo.BackgroundImage and WindowInfo.BackgroundImage ~= "" then
-            BackgroundImage = New("ImageLabel", {
-                Image = Library:GetImageAsset(WindowInfo.BackgroundImage),
-                Position = UDim2.fromScale(0, 0),
-                Size = UDim2.fromScale(1, 1),
-                ScaleType = Enum.ScaleType.Crop,
-                BackgroundTransparency = 1,
-                ImageTransparency = 0.1,
-                Parent = MainFrame,
-            })
-
-            table.insert(
-                Library.Corners,
-                New("UICorner", {
-                    CornerRadius = UDim.new(0, WindowInfo.CornerRadius),
-                    Parent = BackgroundImage,
-                })
-            )
-        end
 
         table.insert(
             Library.Corners,
