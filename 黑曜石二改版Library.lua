@@ -196,6 +196,8 @@ local Library = {
 
     Corners = {},
     ImageCache = {},
+    UseBackgroundMode = false,
+    BackgroundImageTransparency = 0.1,
 
     ToggleKeybind = Enum.KeyCode.RightControl,
     TweenInfo = TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
@@ -231,7 +233,7 @@ local Library = {
         BackgroundColor = Color3.fromRGB(15, 15, 15),
         MainColor = Color3.fromRGB(25, 25, 25),
         AccentColor = Color3.fromRGB(125, 85, 255),
-        OutlineColor = Color3.fromRGB(40, 40, 40),
+        OutlineColor = Color3.fromRGB(147, 112, 219), -- MediumPurple for elegant accent
         FontColor = Color3.new(1, 1, 1),
         Font = GetNotoFont(),
 
@@ -1169,6 +1171,18 @@ function Library:GetImageAsset(ImageInput: string): string
     return ImageInput
 end
 
+function Library:GetBgTransparency(): number
+    return self.UseBackgroundMode and 0.85 or 0
+end
+
+function Library:GetElementTransparency(): number
+    return self.UseBackgroundMode and 0.5 or 0
+end
+
+function Library:GetOutlineColor(): Color3
+    return self.UseBackgroundMode and Color3.fromRGB(147, 112, 219) or Color3.fromRGB(25, 25, 25)
+end
+
 function Library:Validate(Table: { [string]: any }, Template: { [string]: any }): { [string]: any }
     if typeof(Table) ~= "table" then
         return Template
@@ -1645,6 +1659,7 @@ function Library:AddDraggableLabel(Text: string)
     local Label = New("TextLabel", {
         AutomaticSize = Enum.AutomaticSize.XY,
         BackgroundColor3 = "BackgroundColor",
+        BackgroundTransparency = Library:GetBgTransparency(),
         Size = UDim2.fromOffset(0, 0),
         Position = UDim2.fromOffset(6, 6),
         Text = Text,
@@ -1694,6 +1709,7 @@ function Library:AddDraggableButton(Text: string, Func, ExcludeScaling: boolean?
 
     local Button = New("TextButton", {
         BackgroundColor3 = "BackgroundColor",
+        BackgroundTransparency = Library:GetElementTransparency(),
         Position = UDim2.fromOffset(6, 6),
         TextSize = 16,
         ZIndex = 10,
@@ -1738,6 +1754,7 @@ function Library:AddDraggableMenu(Name: string)
     local Holder = New("Frame", {
         AutomaticSize = Enum.AutomaticSize.XY,
         BackgroundColor3 = "BackgroundColor",
+        BackgroundTransparency = Library:GetBgTransparency(),
         Position = UDim2.fromOffset(6, 6),
         Size = UDim2.fromOffset(0, 0),
         ZIndex = 10,
@@ -1836,6 +1853,7 @@ function Library:AddContextMenu(
             AutomaticCanvasSize = List == 2 and Enum.AutomaticSize.Y or Enum.AutomaticSize.None,
             AutomaticSize = List == 1 and Enum.AutomaticSize.Y or Enum.AutomaticSize.None,
             BackgroundColor3 = "BackgroundColor",
+            BackgroundTransparency = Library:GetBgTransparency(),
             BottomImage = "rbxasset://textures/ui/Scroll/scroll-middle.png",
             CanvasSize = UDim2.fromOffset(0, 0),
             ScrollBarImageColor3 = "OutlineColor",
@@ -1849,6 +1867,7 @@ function Library:AddContextMenu(
     else
         Menu = New("Frame", {
             BackgroundColor3 = "BackgroundColor",
+            BackgroundTransparency = Library:GetBgTransparency(),
             Size = typeof(Size) == "function" and Size() or Size,
             Visible = false,
             ZIndex = 10,
@@ -1993,6 +2012,7 @@ end))
 local TooltipLabel = New("TextLabel", {
     AutomaticSize = Enum.AutomaticSize.Y,
     BackgroundColor3 = "BackgroundColor",
+    BackgroundTransparency = Library:GetBgTransparency(),
     TextSize = 14,
     TextWrapped = true,
     Visible = false,
@@ -2358,7 +2378,7 @@ do
 
         local Picker = New("TextButton", {
             BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
             Size = UDim2.fromOffset(18, 18),
             Text = KeyPicker.Value,
             TextSize = 14,
@@ -2401,7 +2421,7 @@ do
             local Checkbox = New("Frame", {
                 AnchorPoint = Vector2.new(0, 0.5),
                 BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
                 Position = UDim2.fromScale(0, 0.5),
                 Size = UDim2.fromOffset(14, 14),
                 SizeConstraint = Enum.SizeConstraint.RelativeYY,
@@ -2479,7 +2499,7 @@ do
 
             local Button = New("TextButton", {
                 BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
                 BackgroundTransparency = 1,
                 Size = UDim2.new(1, 0, 0, 21),
                 Text = Mode,
@@ -3080,7 +3100,7 @@ do
 
         local HueBox = New("TextBox", {
             BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
             ClearTextOnFocus = false,
             Size = UDim2.fromScale(1, 1),
             Text = "#??????",
@@ -3103,7 +3123,7 @@ do
 
         local RgbBox = New("TextBox", {
             BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
             ClearTextOnFocus = false,
             Size = UDim2.fromScale(1, 1),
             Text = "?, ?, ?",
@@ -3395,7 +3415,7 @@ do
             New("Frame", {
                 AnchorPoint = Vector2.new(0, 0.5),
                 BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
                 BorderColor3 = "OutlineColor",
                 BorderSizePixel = 1,
                 Position = UDim2.fromScale(0, 0.5),
@@ -3405,7 +3425,7 @@ do
             New("Frame", {
                 AnchorPoint = Vector2.new(1, 0.5),
                 BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
                 BorderColor3 = "OutlineColor",
                 BorderSizePixel = 1,
                 Position = UDim2.fromScale(1, 0.5),
@@ -3416,7 +3436,7 @@ do
             New("Frame", {
                 AnchorPoint = Vector2.new(0, 0.5),
                 BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
                 BorderColor3 = "OutlineColor",
                 BorderSizePixel = 1,
                 Position = UDim2.fromScale(0, 0.5),
@@ -3628,7 +3648,7 @@ do
             local Base = New("TextButton", {
                 Active = not Button.Disabled,
                 BackgroundColor3 = Button.Disabled and "BackgroundColor" or "MainColor",
-                BackgroundTransparency = 0.5,
+                BackgroundTransparency = Library:GetElementTransparency(),
                 Size = UDim2.fromScale(1, 1),
                 Text = Button.Text,
                 TextSize = 14,
@@ -3913,7 +3933,7 @@ do
 
         local Checkbox = New("Frame", {
             BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
             Size = UDim2.fromScale(1, 1),
             SizeConstraint = Enum.SizeConstraint.RelativeYY,
             Parent = Button,
@@ -4121,7 +4141,7 @@ do
         local Switch = New("Frame", {
             AnchorPoint = Vector2.new(1, 0),
             BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
             Position = UDim2.fromScale(1, 0),
             Size = UDim2.fromOffset(32, 18),
             Parent = Button,
@@ -4139,6 +4159,7 @@ do
         })
         local SwitchStroke = New("UIStroke", {
             Color = "OutlineColor",
+            Transparency = Library.UseBackgroundMode and 0.5 or 0,
             Parent = Switch,
         })
 
@@ -4164,8 +4185,8 @@ do
 
             local Offset = Toggle.Value and 1 or 0
 
-            Switch.BackgroundTransparency = Toggle.Disabled and 0.75 or 0.5
-            SwitchStroke.Transparency = Toggle.Disabled and 0.75 or 0
+            Switch.BackgroundTransparency = Toggle.Disabled and 0.75 or Library:GetElementTransparency()
+            SwitchStroke.Transparency = Toggle.Disabled and 0.75 or (Library.UseBackgroundMode and 0.5 or 0)
 
             Switch.BackgroundColor3 = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.MainColor
             SwitchStroke.Color = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.OutlineColor
@@ -4341,7 +4362,7 @@ do
         local Box = New("TextBox", {
             AnchorPoint = Vector2.new(0, 1),
             BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
             ClearTextOnFocus = not Input.Disabled and Input.ClearTextOnFocus,
             PlaceholderText = Input.Placeholder,
             Position = UDim2.fromScale(0, 1),
@@ -4363,6 +4384,7 @@ do
 
         New("UIStroke", {
             Color = "OutlineColor",
+            Transparency = Library.UseBackgroundMode and 0.5 or 0,
             Parent = Box,
         })
 
@@ -4535,7 +4557,7 @@ do
             Active = not Slider.Disabled,
             AnchorPoint = Vector2.new(0, 1),
             BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
             Position = UDim2.fromScale(0, 1),
             Size = UDim2.new(1, 0, 0, 15),
             Text = "",
@@ -4544,6 +4566,7 @@ do
 
         New("UIStroke", {
             Color = "OutlineColor",
+            Transparency = Library.UseBackgroundMode and 0.5 or 0,
             Parent = Bar,
         })
 
@@ -4594,6 +4617,7 @@ do
             end
             DisplayLabel.TextTransparency = Slider.Disabled and 0.8 or 0
 
+            Bar.BackgroundTransparency = Slider.Disabled and 0.8 or Library:GetElementTransparency()
             Fill.BackgroundColor3 = Slider.Disabled and Library.Scheme.OutlineColor or Library.Scheme.AccentColor
             Library.Registry[Fill].BackgroundColor3 = Slider.Disabled and "OutlineColor" or "AccentColor"
         end
@@ -4829,7 +4853,7 @@ do
             Active = not Dropdown.Disabled,
             AnchorPoint = Vector2.new(0, 1),
             BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
             Position = UDim2.fromScale(0, 1),
             Size = UDim2.new(1, 0, 0, 21),
             Text = "---",
@@ -4847,6 +4871,7 @@ do
 
         New("UIStroke", {
             Color = "OutlineColor",
+            Transparency = Library.UseBackgroundMode and 0.5 or 0,
             Parent = Display,
         })
 
@@ -5006,7 +5031,7 @@ do
 
                 local Button = New("TextButton", {
                     BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
                     BackgroundTransparency = 1,
                     LayoutOrder = IsDisabled and 1 or 0,
                     Size = UDim2.new(1, 0, 0, 21),
@@ -5305,7 +5330,7 @@ do
         local Box = New("Frame", {
             AnchorPoint = Vector2.new(0, 1),
             BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
             BorderColor3 = "OutlineColor",
             BorderSizePixel = 1,
             Position = UDim2.fromScale(0, 1),
@@ -5543,7 +5568,7 @@ do
         local Box = New("Frame", {
             AnchorPoint = Vector2.new(0, 1),
             BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
             BorderColor3 = "OutlineColor",
             BorderSizePixel = 1,
             BackgroundTransparency = Image.BackgroundTransparency,
@@ -5686,7 +5711,7 @@ do
         local Box = New("Frame", {
             AnchorPoint = Vector2.new(0, 1),
             BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
             BorderColor3 = "OutlineColor",
             BorderSizePixel = 1,
             Position = UDim2.fromScale(0, 1),
@@ -5963,6 +5988,7 @@ do
         do
             DepGroupboxContainer = New("Frame", {
                 BackgroundColor3 = "BackgroundColor",
+                BackgroundTransparency = Library:GetBgTransparency(),
                 Size = UDim2.fromScale(1, 0),
                 Visible = false,
                 Parent = BoxHolder,
@@ -6132,7 +6158,7 @@ function Library:Notify(...)
     local Holder = New("Frame", {
         AutomaticSize = Enum.AutomaticSize.Y,
         BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
         Position = Library.NotifySide:lower() == "left" and UDim2.new(-1, -8, 0, -2) or UDim2.new(1, 8, 0, -2),
         Size = UDim2.fromScale(1, 1),
         ZIndex = 5,
@@ -6342,6 +6368,7 @@ function Library:Notify(...)
     })
     local TimerBar = New("Frame", {
         BackgroundColor3 = "BackgroundColor",
+        BackgroundTransparency = Library:GetElementTransparency(),
         BorderColor3 = "OutlineColor",
         BorderSizePixel = 1,
         Position = UDim2.fromOffset(0, 3),
@@ -6427,6 +6454,13 @@ function Library:CreateWindow(WindowInfo)
         WindowInfo.Font = Font.fromEnum(WindowInfo.Font)
     end
     WindowInfo.CornerRadius = math.min(WindowInfo.CornerRadius, 32)
+
+    --// Background Mode Auto-Detect
+    if WindowInfo.UseBackgroundMode == nil then
+        WindowInfo.UseBackgroundMode = (WindowInfo.BackgroundImage and WindowInfo.BackgroundImage ~= "")
+    end
+    Library.UseBackgroundMode = WindowInfo.UseBackgroundMode
+    Library.BackgroundImageTransparency = WindowInfo.BackgroundImageTransparency
     
     --// Old Naming \\--
     if WindowInfo.Compact ~= nil then
@@ -6485,7 +6519,7 @@ function Library:CreateWindow(WindowInfo)
             Position = WindowInfo.Position,
             Size = WindowInfo.Size,
             Visible = false,
-            BackgroundTransparency = 0.85,
+            BackgroundTransparency = Library:GetBgTransparency(),
             ClipsDescendants = true,
             Parent = ScreenGui,
         })
@@ -6499,7 +6533,7 @@ function Library:CreateWindow(WindowInfo)
                 Size = UDim2.fromScale(1, 1),
                 ScaleType = Enum.ScaleType.Stretch,
                 BackgroundTransparency = 1,
-                ImageTransparency = 0,
+                ImageTransparency = WindowInfo.BackgroundImageTransparency,
                 ZIndex = 1,
                 Parent = MainFrame,
             })
@@ -6667,7 +6701,7 @@ function Library:CreateWindow(WindowInfo)
 
         SearchBox = New("TextBox", {
             BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
             PlaceholderText = "Search",
             Size = WindowInfo.SearchbarSize,
             TextScaled = true,
@@ -6728,7 +6762,7 @@ function Library:CreateWindow(WindowInfo)
         --// Bottom Bar \\--
         BottomBackground = New("Frame", {
             AnchorPoint = Vector2.new(0, 1),
-            BackgroundTransparency = 0.85,
+            BackgroundTransparency = Library:GetBgTransparency(),
             Position = UDim2.fromScale(0, 1),
             Size = UDim2.new(1, 0, 0, 20 + WindowInfo.CornerRadius),
             Parent = MainFrame
@@ -6797,7 +6831,7 @@ function Library:CreateWindow(WindowInfo)
         --// Tabs \\--
         Tabs = New("ScrollingFrame", {
             AutomaticCanvasSize = Enum.AutomaticSize.Y,
-            BackgroundTransparency = 0.85,
+            BackgroundTransparency = Library:GetBgTransparency(),
             CanvasSize = UDim2.fromScale(0, 0),
             Position = UDim2.fromOffset(0, 49),
             ScrollBarThickness = 0,
@@ -6812,7 +6846,7 @@ function Library:CreateWindow(WindowInfo)
         --// Container \\--
         Container = New("Frame", {
             AnchorPoint = Vector2.new(1, 0),
-            BackgroundTransparency = 1,
+            BackgroundTransparency = Library:GetBgTransparency(),
             Name = "Container",
             Position = UDim2.new(1, 0, 0, 49),
             Size = UDim2.new(1, -InitialLeftWidth - 1, 1, -70),
@@ -6981,8 +7015,7 @@ function Library:CreateWindow(WindowInfo)
         do
             TabButton = New("TextButton", {
                 BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
-                BackgroundTransparency = 1,
+                BackgroundTransparency = Library.UseBackgroundMode and Library:GetElementTransparency() or 1,
                 Size = UDim2.new(1, 0, 0, 40),
                 Text = "",
                 Parent = Tabs,
@@ -7124,6 +7157,7 @@ function Library:CreateWindow(WindowInfo)
         do
             WarningBox = New("Frame", {
                 BackgroundColor3 = "BackgroundColor",
+                BackgroundTransparency = Library:GetBgTransparency(),
                 Position = UDim2.fromOffset(2, 0),
                 Size = UDim2.new(1, -5, 0, 0),
                 Parent = WarningBoxHolder,
@@ -7341,7 +7375,7 @@ function Library:CreateWindow(WindowInfo)
             do
                 GroupboxHolder = New("Frame", {
                     BackgroundColor3 = "BackgroundColor",
-                    BackgroundTransparency = 0.85,
+                    BackgroundTransparency = Library:GetBgTransparency(),
                     Size = UDim2.fromScale(1, 0),
                     ZIndex = 2,
                     Parent = BoxHolder,
@@ -7461,7 +7495,7 @@ function Library:CreateWindow(WindowInfo)
             do
                 TabboxHolder = New("Frame", {
                     BackgroundColor3 = "BackgroundColor",
-                    BackgroundTransparency = 0.85,
+                    BackgroundTransparency = Library:GetBgTransparency(),
                     Size = UDim2.fromScale(1, 0),
                     ZIndex = 2,
                     Parent = BoxHolder,
@@ -7512,8 +7546,8 @@ function Library:CreateWindow(WindowInfo)
 
                 local Button = New("TextButton", {
                     BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
-                    BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
+                    BackgroundTransparency = Library:GetElementTransparency(),
                     Size = UDim2.fromOffset(0, 34),
                     Text = "",
                     Parent = TabboxButtons,
@@ -7530,7 +7564,7 @@ function Library:CreateWindow(WindowInfo)
                 local BottomCover = New("Frame", {
                     Name = "BottomCover",
                     BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
                     BorderSizePixel = 0,
                     Position = UDim2.new(0, 0, 1, -WindowInfo.CornerRadius),
                     Size = UDim2.new(1, 0, 0, WindowInfo.CornerRadius),
@@ -7540,7 +7574,7 @@ function Library:CreateWindow(WindowInfo)
                 local LeftCover = New("Frame", {
                     Name = "LeftCover",
                     BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
                     BorderSizePixel = 0,
                     Position = UDim2.new(0, 0, 0, 0),
                     Size = UDim2.new(0, WindowInfo.CornerRadius, 1, 0),
@@ -7552,7 +7586,7 @@ function Library:CreateWindow(WindowInfo)
                     Name = "RightCover",
                     AnchorPoint = Vector2.new(1, 0),
                     BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
                     BorderSizePixel = 0,
                     Position = UDim2.new(1, 0, 0, 0),
                     Size = UDim2.new(0, WindowInfo.CornerRadius, 1, 0),
@@ -7749,7 +7783,7 @@ function Library:CreateWindow(WindowInfo)
             end
 
             TweenService:Create(TabButton, Library.TweenInfo, {
-                BackgroundTransparency = 0.85,
+                BackgroundTransparency = Library:GetElementTransparency(),
             }):Play()
             TweenService:Create(TabLabel, Library.TweenInfo, {
                 TextTransparency = 0,
@@ -7776,7 +7810,7 @@ function Library:CreateWindow(WindowInfo)
 
         function Tab:Hide()
             TweenService:Create(TabButton, Library.TweenInfo, {
-                BackgroundTransparency = 1,
+                BackgroundTransparency = Library.UseBackgroundMode and 0.85 or 1,
             }):Play()
             TweenService:Create(TabLabel, Library.TweenInfo, {
                 TextTransparency = 0.5,
@@ -7847,8 +7881,7 @@ function Library:CreateWindow(WindowInfo)
         do
             TabButton = New("TextButton", {
                 BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
-                BackgroundTransparency = 1,
+                BackgroundTransparency = Library.UseBackgroundMode and Library:GetElementTransparency() or 1,
                 Size = UDim2.new(1, 0, 0, 40),
                 Text = "",
                 Parent = Tabs,
@@ -7933,7 +7966,7 @@ function Library:CreateWindow(WindowInfo)
 
             local Box = New("TextBox", {
                 BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
                 PlaceholderText = "Key",
                 Size = UDim2.new(1, -71, 1, 0),
                 TextSize = 14,
@@ -7960,7 +7993,7 @@ function Library:CreateWindow(WindowInfo)
             local Button = New("TextButton", {
                 AnchorPoint = Vector2.new(1, 0),
                 BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
                 Position = UDim2.fromScale(1, 0),
                 Size = UDim2.new(0, 63, 1, 0),
                 Text = "Execute",
@@ -8017,7 +8050,7 @@ function Library:CreateWindow(WindowInfo)
             end
 
             TweenService:Create(TabButton, Library.TweenInfo, {
-                BackgroundTransparency = 0.85,
+                BackgroundTransparency = Library:GetElementTransparency(),
             }):Play()
             TweenService:Create(TabLabel, Library.TweenInfo, {
                 TextTransparency = 0,
@@ -8044,7 +8077,7 @@ function Library:CreateWindow(WindowInfo)
 
         function Tab:Hide()
             TweenService:Create(TabButton, Library.TweenInfo, {
-                BackgroundTransparency = 1,
+                BackgroundTransparency = Library.UseBackgroundMode and 0.85 or 1,
             }):Play()
             TweenService:Create(TabLabel, Library.TweenInfo, {
                 TextTransparency = 0.5,
@@ -8111,12 +8144,13 @@ function Library:CreateWindow(WindowInfo)
             Parent = MainFrame,
         })
         TweenService:Create(DialogOverlay, Library.TweenInfo, {
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
         }):Play()
 
         DialogFrame = New("TextButton", {
             AnchorPoint = Vector2.new(0.5, 0.5),
             BackgroundColor3 = "BackgroundColor",
+            BackgroundTransparency = Library:GetBgTransparency(),
             Position = UDim2.fromScale(0.5, 0.5),
             Size = UDim2.fromOffset(300, 0),
             AutomaticSize = Enum.AutomaticSize.Y,
@@ -8267,7 +8301,7 @@ function Library:CreateWindow(WindowInfo)
         
         local _Sep2 = New("Frame", {
             BackgroundColor3 = "OutlineColor",
-            BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
             BorderSizePixel = 0,
             Size = UDim2.new(1, 0, 0, 1),
             LayoutOrder = 5,
@@ -8815,7 +8849,7 @@ function Library:CreateLoading(LoadingInfo)
         BackgroundColor3 = function()
             return Library:GetBetterColor(Library.Scheme.BackgroundColor, -1)
         end,
-        BackgroundTransparency = 0.85,
+        BackgroundTransparency = Library:GetBgTransparency(),
         Position = UDim2.fromScale(0.5, 0.5),
         Size = UDim2.fromOffset(Loading.ShowSidebar and (Loading.ContentWidth + Loading.SidebarWidth) or Loading.WindowWidth, Loading.WindowHeight),
         ClipsDescendants = true,
@@ -8999,8 +9033,8 @@ function Library:CreateLoading(LoadingInfo)
     --// Progress Bar \\--
     local SliderBar = New("Frame", {
         BackgroundColor3 = "MainColor",
-            BackgroundTransparency = 0.5,
-        BackgroundTransparency = 0.5,
+            BackgroundTransparency = Library:GetElementTransparency(),
+        BackgroundTransparency = Library:GetElementTransparency(),
         Size = UDim2.new(0.7, 0, 0, 15),
         Parent = InnerContent,
     })
@@ -9116,7 +9150,7 @@ function Library:CreateLoading(LoadingInfo)
 
     local ErrorButtonsDivider = New("Frame", {
         BackgroundColor3 = "OutlineColor",
-        BackgroundTransparency = 0.5,
+        BackgroundTransparency = Library:GetElementTransparency(),
         BorderSizePixel = 0,
         AnchorPoint = Vector2.new(0.5, 0),
         Position = UDim2.new(0.5, 0, 1, -48),
