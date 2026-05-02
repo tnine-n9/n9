@@ -1120,19 +1120,50 @@ function Library:GetImageAsset(ImageInput: string): string
         local GetAsset = getcustomasset or getsynasset
         if GetAsset and writefile then
             local Success, Result = pcall(function()
-                local Request = (syn and syn.request) or (http and http.request) or http_request or request
-                local Response = Request({Url = ImageInput, Method = "GET"})
-                local FileName = "ObsidianImg_" .. tostring(string.len(ImageInput)) .. "_" .. tostring(string.sub(ImageInput, -16):gsub("[^%w]", "_")) .. ".png"
-                writefile(FileName, Response.Body)
-                return GetAsset(FileName)
+                local ImageData = nil
+                -- Try request functions first (most reliable for external images)
+                local RequestFunc = (syn and syn.request) or (http and http.request) or http_request or request
+                if RequestFunc then
+                    local Response = RequestFunc({Url = ImageInput, Method = "GET"})
+                    if Response then
+                        if typeof(Response) == "string" and #Response > 100 then
+                            ImageData = Response
+                        elseif Response.Body and #Response.Body > 100 then
+                            ImageData = Response.Body
+                        end
+                    end
+                end
+                -- Fallback to game:HttpGet
+                if not ImageData then
+                    local HttpSuccess, HttpResult = pcall(function()
+                        return game:HttpGet(ImageInput)
+                    end)
+                    if HttpSuccess and HttpResult and #HttpResult > 100 then
+                        ImageData = HttpResult
+                    end
+                end
+                if not ImageData or #ImageData < 100 then
+                    error("Image download failed or returned empty")
+                end
+                math.randomseed(tick())
+                local FileName = "ObsidianBg_" .. tostring(math.random(10000, 99999)) .. ".jpg"
+                writefile(FileName, ImageData)
+                local AssetId = GetAsset(FileName)
+                if not AssetId or AssetId == "" then
+                    error("getcustomasset returned empty")
+                end
+                return AssetId
             end)
-            if Success and Result then
+            if Success and Result and Result ~= "" then
                 Library.ImageCache[ImageInput] = Result
                 return Result
             else
-                warn("[Obsidian] BackgroundImage download failed: " .. tostring(Result))
+                warn("[Obsidian] BackgroundImage failed: " .. tostring(Result))
                 return ""
             end
+        else
+            warn("[Obsidian] getcustomasset/writefile not available, cannot load external image")
+            return ""
         end
     end
 
@@ -6472,7 +6503,7 @@ function Library:CreateWindow(WindowInfo)
                 ScaleType = Enum.ScaleType.Crop,
                 ZIndex = 0,
                 BackgroundTransparency = 1,
-                ImageTransparency = 0.35,
+                ImageTransparency = 0.1,
                 Parent = MainFrame,
             })
 
