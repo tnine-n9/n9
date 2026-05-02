@@ -28,6 +28,14 @@ local Toggles = {}
 local Options = {}
 local Tooltips = {}
 
+local function GetNotoFont()
+    local Ok, FontObj = pcall(Font.fromName, "Noto Sans SC")
+    if Ok then
+        return FontObj
+    end
+    return Font.fromEnum(Enum.Font.Gotham)
+end
+
 local BaseURL = "https://raw.githubusercontent.com/deividcomsono/Obsidian/refs/heads/main/"
 local CustomImageManager = {}
 local CustomImageManagerAssets = {
@@ -187,6 +195,7 @@ local Library = {
     ActiveDialog = nil,
 
     Corners = {},
+    ImageCache = {},
 
     ToggleKeybind = Enum.KeyCode.RightControl,
     TweenInfo = TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
@@ -224,7 +233,7 @@ local Library = {
         AccentColor = Color3.fromRGB(125, 85, 255),
         OutlineColor = Color3.fromRGB(40, 40, 40),
         FontColor = Color3.new(1, 1, 1),
-        Font = Font.fromEnum(Enum.Font.Gotham),
+        Font = GetNotoFont(),
 
         RedColor = Color3.fromRGB(255, 50, 50),
         DestructiveColor = Color3.fromRGB(220, 38, 38),
@@ -316,7 +325,7 @@ local Templates = {
         CornerRadius = 14,
         NotifySide = "Right",
         ShowCustomCursor = true,
-        Font = Enum.Font.Gotham,
+        Font = GetNotoFont(),
         BackgroundImage = "",
         ToggleKeybind = Enum.KeyCode.RightControl,
         
@@ -1092,6 +1101,42 @@ function Library:GetCustomIcon(IconName: string): any
     end
 
     return nil
+end
+
+function Library:GetImageAsset(ImageInput: string): string
+    if not ImageInput or ImageInput == "" then
+        return ""
+    end
+
+    if Library.ImageCache[ImageInput] then
+        return Library.ImageCache[ImageInput]
+    end
+
+    if tonumber(ImageInput) then
+        return "rbxassetid://" .. ImageInput
+    end
+
+    if string.match(ImageInput, "^http") then
+        local GetAsset = getcustomasset or getsynasset
+        if GetAsset and writefile then
+            local Success, Result = pcall(function()
+                local Request = (syn and syn.request) or (http and http.request) or http_request or request
+                local Response = Request({Url = ImageInput, Method = "GET"})
+                local FileName = "ObsidianImg_" .. tostring(string.len(ImageInput)) .. "_" .. tostring(string.sub(ImageInput, -16):gsub("[^%w]", "_")) .. ".png"
+                writefile(FileName, Response.Body)
+                return GetAsset(FileName)
+            end)
+            if Success and Result then
+                Library.ImageCache[ImageInput] = Result
+                return Result
+            else
+                warn("[Obsidian] BackgroundImage download failed: " .. tostring(Result))
+                return ""
+            end
+        end
+    end
+
+    return ImageInput
 end
 
 function Library:Validate(Table: { [string]: any }, Template: { [string]: any }): { [string]: any }
@@ -6419,9 +6464,9 @@ function Library:CreateWindow(WindowInfo)
             Parent = MainFrame,
         })
 
-        if WindowInfo.BackgroundImage then
+        if WindowInfo.BackgroundImage and WindowInfo.BackgroundImage ~= "" then
             BackgroundImage = New("ImageLabel", {
-                Image = WindowInfo.BackgroundImage,
+                Image = Library:GetImageAsset(WindowInfo.BackgroundImage),
                 Position = UDim2.fromScale(0, 0),
                 Size = UDim2.fromScale(1, 1),
                 ScaleType = Enum.ScaleType.Crop,
@@ -6740,11 +6785,11 @@ function Library:CreateWindow(WindowInfo)
         WindowInfo.Title = title
     end
 
-    if WindowInfo.BackgroundImage then
+    if WindowInfo.BackgroundImage and WindowInfo.BackgroundImage ~= "" then
         function Window:SetBackgroundImage(Image: string)
             assert(typeof(Image) == "string", "Expected string for Image got: " .. typeof(Image))
     
-            BackgroundImage.Image = Image
+            BackgroundImage.Image = Library:GetImageAsset(Image)
             WindowInfo.BackgroundImage = Image
         end
     end
