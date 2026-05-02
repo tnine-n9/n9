@@ -6466,7 +6466,7 @@ function Library:CreateWindow(WindowInfo)
             Position = WindowInfo.Position,
             Size = WindowInfo.Size,
             Visible = false,
-            BackgroundTransparency = 0.15,
+            BackgroundTransparency = 0.5,
             ClipsDescendants = true,
             Parent = ScreenGui,
         })
@@ -6480,7 +6480,8 @@ function Library:CreateWindow(WindowInfo)
                 Size = UDim2.fromScale(1, 1),
                 ScaleType = Enum.ScaleType.Crop,
                 BackgroundTransparency = 1,
-                ImageTransparency = 0.1,
+                ImageTransparency = 0,
+                ZIndex = 1,
                 Parent = MainFrame,
             })
 
@@ -7322,8 +7323,9 @@ function Library:CreateWindow(WindowInfo)
             do
                 GroupboxHolder = New("Frame", {
                     BackgroundColor3 = "BackgroundColor",
-                    BackgroundTransparency = 0.25,
+                    BackgroundTransparency = 0.5,
                     Size = UDim2.fromScale(1, 0),
+                    ZIndex = 2,
                     Parent = BoxHolder,
                 })
                 table.insert(
@@ -7441,8 +7443,9 @@ function Library:CreateWindow(WindowInfo)
             do
                 TabboxHolder = New("Frame", {
                     BackgroundColor3 = "BackgroundColor",
-                    BackgroundTransparency = 0.25,
+                    BackgroundTransparency = 0.5,
                     Size = UDim2.fromScale(1, 0),
+                    ZIndex = 2,
                     Parent = BoxHolder,
                 })
                 table.insert(
